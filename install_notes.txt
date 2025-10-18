@@ -1,0 +1,55 @@
+mkdir -p /storage/docker/volumes/sabnzbd/config/
+mkdir -p /storage/docker/volumes/sonarr/config/
+mkdir -p /storage/docker/volumes/sonarr/logs/
+mkdir -p /storage/data/downloads
+mkdir -p /storage/data/incomplete
+mkdir -p /storage/data/tv
+
+docker network create media_network
+
+docker create \
+  --name=sabnzbd \
+  --network=media_network \
+  -e PUID=1000 \
+  -e PGID=1000 \
+  -e TZ=America/Los_Angeles \
+  -p 8181:8181 \
+  -p 9191:9191 \
+  -v /storage/docker/volumes/sabnzbd/config:/config \
+  -v /storage/data/downloads:/data/downloads \
+  -v /storage/data/incomplete:/data/incomplete \
+  linuxserver/sabnzbd
+
+docker create \
+  --name=sonarr \
+  --network=media_network \
+  -e PUID=1000 \
+  -e PGID=1000 \
+  -e TZ=America/Los_Angeles \
+  -p 8282:8282 \
+  -v /storage/docker/volumes/sonarr/config:/config \
+  -v /storage/docker/volumes/sonarr/logs:/logs \
+  -v /storage/data:/data \
+  linuxserver/sonarr
+
+docker create \
+  --name=radarr \
+  --network=media_network \
+  -e PUID=1000 \
+  -e PGID=1000 \
+  -e TZ=America/Los_Angeles \
+  -p 8383:8383 \
+  -v /storage/docker/volumes/radarr/config:/config \
+  -v /storage/docker/volumes/radarr/logs:/logs \
+  -v /storage/data:/data \
+  linuxserver/radarr
+
+docker update --restart unless-stopped sabnzbd
+docker update --restart unless-stopped sonarr
+docker update --restart unless-stopped radarr
+
+docker start sabnzbd
+docker start sonarr
+docker start radarr
+
+docker exec -it sabnzbd /bin/bash
