@@ -52,6 +52,7 @@ if [[ "$container" == "radarr" ]]
   then
   docker create \
     --name=radarr \
+    --restart=unless-stopped \
     --network=media_network \
     -e PUID=1000 \
     -e PGID=1000 \
@@ -70,6 +71,7 @@ elif [[ "$container" == "sabnzbd" ]]
   then
   docker create \
     --name=sabnzbd \
+    --restart=unless-stopped \
     --network=media_network \
     -e PUID=1000 \
     -e PGID=1000 \
@@ -89,6 +91,7 @@ elif [[ "$container" == "sonarr"  ]]
   then
   docker create \
     --name=sonarr \
+    --restart=unless-stopped \
     --network=media_network \
     -e PUID=1000 \
     -e PGID=1000 \
